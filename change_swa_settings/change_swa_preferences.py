@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """Simple script which will change config option for Scalix Web access
 application
 
 """
-# -*- coding: utf-8 -*-
+
 import argparse
 import imaplib
 import operator
@@ -126,10 +128,21 @@ class PreferenceEmail(object):
         as string list
         :return: Element
         """
-        # splitlines does not work and I don't know why . so lets just manually
-        # split string by '\n' delimiter
+        def decode_payload(data: Any) -> Generator:
+            """
+
+            :return: generator
+            """
+            if isinstance(data, (str, bytes)):
+                data = data.splitlines()
+            for line in filter(None, data):
+                if line[-2:] in ['==', b'==']:
+                    yield body_decode(line)
+                else:
+                    yield line
+
         return ElementTree.fromstringlist(
-            [body_decode(line) for line in self.__message.get_payload()]
+            decode_payload(self.__message.get_payload())
         )
 
     @staticmethod
