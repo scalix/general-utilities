@@ -19,7 +19,7 @@ from email.base64mime import body_decode
 from email.errors import InvalidBase64CharactersDefect
 from typing import AnyStr, Generator, List, Union, Set, Tuple, Any
 from xml.etree import ElementTree
-from xml.etree.ElementTree import Element
+from xml.etree.ElementTree import Element, ParseError
 
 import collections
 
@@ -74,6 +74,8 @@ class PreferenceEmail(object):
 
     """
 
+    REPLACE_INVALID_XML = False
+
     def __init__(self, uid: int, message: EmailMessage):
         self.__uid = uid
         self.__message = message
@@ -102,7 +104,22 @@ class PreferenceEmail(object):
         :return: xml root Element
         """
         if not self.__preferences:
-            self.__preferences = self.__parse_preferences()
+            try:
+                self.__preferences = self.__parse_preferences()
+            except ParseError as parserError:
+                warnings.warn(parserError, RuntimeWarning)
+                if PreferenceEmail.REPLACE_INVALID_XML:
+                    self.__preferences = ElementTree.fromstring(
+                        PREFERENCE_TEMPLATE
+                    )
+                else:
+                    raise SystemError('Unfortunately we could not parse xml '
+                                      'data in this email. You may re-run your'
+                                      ' script with \'--debug 15\' for '
+                                      'debugging purpose or add '
+                                      '\'--replace-invalid-xml true\' to use'
+                                      ' SWA preference xml template instead of '
+                                      'invalid xml in this email.')
         return self.__preferences
 
     def __parse_preferences(self) -> Element:
@@ -136,7 +153,7 @@ class PreferenceEmail(object):
             if isinstance(data, (str, bytes)):
                 data = data.splitlines()
             for line in filter(None, data):
-                if line[-2:] in ['==', b'==']:
+                if line[-2:] in ['==', b'=='] or line[-1] in ['+', b'+']:
                     yield body_decode(line)
                 else:
                     yield line
@@ -423,6 +440,10 @@ if __name__ == '__main__':
                         default=imaplib.IMAP4_PORT)
     parser.add_argument('--use-ssl', type=bool, help='Use ssl connection',
                         default=False)
+    parser.add_argument('--replace-invalid-xml', type=bool,
+                        help='Use default SWA preference template for invalid'
+                             ' xml document in email.',
+                        default=False)
     parser.add_argument('--debug', default=0, type=int,
                         help='Sets debug level for the imaplib module.')
 
@@ -437,5 +458,6 @@ if __name__ == '__main__':
         swa_settings[option_name] = option_value.strip('\'"')
 
     imaplib.Debug = cmd_args.debug
+    PreferenceEmail.REPLACE_INVALID_XML = cmd_args.replace_invalid_xml
 
     change_swa_settings(create_imap_connection(cmd_args), swa_settings)
