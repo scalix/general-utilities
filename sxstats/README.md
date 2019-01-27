@@ -1,3 +1,36 @@
+```shell
+[root@mail test_py]# python ./sxstats.py 
+Linux Distribution: CentOS 6.10 Final
+Platform: Linux-2.6.32-754.9.1.el6.x86_64-x86_64-with-centos-6.10-Final
+Architecture: 64bit ELF
+Machine: x86_64
+Node: mail.xxxx.com
+System: Linux
+Release: 2.6.32-754.9.1.el6.x86_64
+Version: #1 SMP Thu Dec 6 08:02:15 UTC 2018
+FQDN: mail.scalix.com
+Jre Version: java version "1.8.0_191"
+Java(TM) SE Runtime Environment (build 1.8.0_191-b12)
+Java HotSpot(TM) Server VM (build 25.191-b12, mixed mode)
+
+Packages installed: scalix-res-12.8.0.25754-1.noarch
+scalix-server-12.8.0.15039-1.rhel6.x86_64
+scalix-sis-12.8.0.26774-1.noarch
+scalix-swa-12.8.0.28855-0.noarch
+scalix-text-extractors-1.0-2.rhel6.i686
+scalix-mobile-12.1.0.14474-1.noarch
+scalix-iconv-extras-1.2-7.rhel6.i686
+scalix-postgres-12.8.0-15983.noarch
+scalix-tomcat-9.0.14-56.noarch
+scalix-tomcat-connector-12.6.0-14721.rhel6.noarch
+scalix-platform-12.8.0.28866-0.noarch
+scalix-sac-12.8.0.25754-1.noarch
+scalix-wireless-12.8.0.29044-1.noarch
+scalix-spamassassin-0.0.12-1.noarch
+scalix-libical-0.44.976-2.rhel6.i686
+scalix-chardet-1.0.20071031-2.rhel6.i686
+```
+
  ```shell
  [root@web ~]# ./sxstats.sh 
 Gather system information
